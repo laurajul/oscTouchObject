@@ -1,5 +1,5 @@
 # TUI-Viz
-Bachelor Thesis Prototype Laura Wagner -  FH Aachen -- Bachelor 2019
+Bachelor Thesis Prototype Laura Wagner -  FH Aachen -- Bachelor 2019 Communications-Design
 
 based on oscTouchObject of Paul Ferragut 
 
