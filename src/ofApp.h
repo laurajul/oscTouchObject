@@ -1,6 +1,10 @@
 /*
-Tangible Recognition Implementation by www.convivial.studio
-Calendar, Visualization Coding - by Laura Wagner
+This application uses Open Source components.
+You can find the source code of the open source project along with license information below.
+I acknowledge and I'm grateful to the developer for his contribution to open source.
+
+Project: oscTouchObject https://github.com/paul-ferragut/oscTouchObject
+
 */
 
 #pragma once
