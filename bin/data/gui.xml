@@ -4,4 +4,10 @@
 <drawDebugB>1</drawDebugB>
 	<fullScreenB>0</fullScreenB>
 <gui/>
+<group>
+		<distance_triangle>384.04</distance_triangle>
+		<errorToleranceTriangle>0.5</errorToleranceTriangle>
+		<drawDebugB>1</drawDebugB>
+		<fullScreenB>0</fullScreenB>
+	</group>
 </gui>

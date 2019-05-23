@@ -1,5 +1,6 @@
 /*
-www.convivial.studio
+Tangible Recognition Implementation by www.convivial.studio
+Calendar, Visualization Coding - by Laura Wagner
 */
 
 
@@ -18,6 +19,7 @@ www.convivial.studio
 #ifdef USE_OSC
 #include "ofxOsc.h"
 #endif
+
 
 
  struct trianglePt {
@@ -51,7 +53,10 @@ struct triangleTracker {
 
 
 class touchObject {
+	/* IMAGES*/
 
+	ofImage radialc;
+	
 
 public:
 touchObject(){};

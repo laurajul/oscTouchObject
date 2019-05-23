@@ -1,13 +1,135 @@
 /*
-www.convivial.studio
+
+Tangible Recognition Implementation by www.convivial.studio
+Calendar, Visualization Coding - by Laura Wagner
+
+//
+
 */
 
 #include "touchObject.h"
-
+#include <iostream>
+#include <string>    // std::string
+#include <fstream>   // std::ofstream, std::ifstream
+#include <vector>    // std::vector
+#include <utility>   // std::pair
+#include <stdexcept> // std::runtime_error
+#include <sstream>   // std::stringstream
 
 //--------------------------------------------------------------
+string temp;
+string line;
+
+
+int j = 0;
+
+
+
+ofPolyline TemperaturLinie;
+
+
+
+
+
+typedef float fHour[24];
+typedef fHour fDay[31];
+std::vector<std::string> lineSplitted;
+std::vector<std::string> lineSplittedSun;
+std::vector<float> allTemperatures;
+std::vector<float> allGlobalRadiation;
+//float allTemperatures[8736];
+float Temperatur[12][31][24]; 
+float Globalstrahlung[12][31][24];
+int iAnzahlTage[12];
+
+
+
+
+
+using namespace std;
+
+std::vector<std::string> split(const std::string& s, char delimiter)
+{
+	std::vector<std::string> tokens;
+	std::string token;
+	std::istringstream tokenStream(s);
+	while (std::getline(tokenStream, token, delimiter))
+	{
+		tokens.push_back(token);
+	}
+	return tokens;
+}
+
+
 void touchObject::setup() {
 
+	
+	
+
+	//FETCH DATA WETTERDATEN////
+
+	iAnzahlTage[0] = 31;
+	iAnzahlTage[1] = 28;
+	iAnzahlTage[2] = 31;
+	iAnzahlTage[3] = 30;
+	iAnzahlTage[4] = 31;
+	iAnzahlTage[5] = 30;
+	iAnzahlTage[6] = 31;
+	iAnzahlTage[7] = 31;
+	iAnzahlTage[8] = 30;
+	iAnzahlTage[9] = 31;
+	iAnzahlTage[10] = 30;
+	iAnzahlTage[11] = 31;
+
+
+	ifstream ip("data/data.csv");
+	if (!ip.is_open()) std::cout << "ERROR: no file" << '\n';
+	//getline(ip, temp, ',');
+	float temp;
+	float globalRadiation;
+
+
+	for (int i = 0; i < 8786; i++)
+	{
+		getline(ip, line);
+		lineSplitted = split(line, ',');
+		//cout << lineSplitted[0] << endl;
+		temp = stof(lineSplitted[0]);
+		globalRadiation = stof(lineSplitted[6]);
+
+		//cout << lineSplitted[6] << endl;
+		allTemperatures.push_back(temp);
+		allGlobalRadiation.push_back(globalRadiation);
+
+	}
+
+	/**/
+
+	allTemperatures[0];
+	allGlobalRadiation[0];
+	int i = 0;
+	for (int m = 0; m < 12; m++) {
+
+		for (int t = 0; t < iAnzahlTage[m]; t++)
+		{
+			for (int s = 0; s < 24; s++)
+			{
+				Temperatur[m][t][s] = allTemperatures[i];
+				Globalstrahlung[m][t][s] = allGlobalRadiation[i];
+				i++;
+
+			}
+		}
+
+	}
+
+
+	
+
+	//FETCH DATA WETTERDATEN////
+	
+
+	//radialc.load("radialc.png");
 	settings.loadFile("settings.xml");
 	cout << "angles used:" << endl;
 	for (int i = 0;i < settings.getNumTags("angle");i++) {
@@ -152,7 +274,7 @@ void touchObject::update(vector<ofPoint>touchPt,float distanceTriangle=150) {
 		  triangleT[i].pos[1] = polyNoDuplicate[i][1];
 		  triangleT[i].pos[2] = polyNoDuplicate[i][2];
 
-		  ofSetColor(ofColor::purple);
+		  //ofSetColor(ofColor::purple);
 
 		  int topCircle = findTop(triangleT[i].pos);
 
@@ -186,21 +308,385 @@ void touchObject::update(vector<ofPoint>touchPt,float distanceTriangle=150) {
 //--------------------------------------------------------------
 void touchObject::draw() {
 
+
+	//// ORIENTATION /// MAPPING VALUES
+	///		b = at + b
+
+	///360/(12 iAnzahlTage)
+
+	///  	255 = a*-10 + b
+	/// 	0 = a * 20 + b
+
+	///		255 * 2 / 3 = b
+	/// 	255 / (-30) = a
+
+	float M_PI = 3.14159265358979323846264338327950288419716939937510582097494459;
+
+	ofBackground(0, 0, 0);
+
+	int q = 0;
+	int markerDrawOffsetM = 175;
+	//int markerDrawOffsetM_inner = 100;
+	int markerDrawOffsetG = 179;
+	//int markerDrawOffsetG_inner = 10;
+
+	int markerDrawOffsetY = 375;
+	int magT = 3;
+	float magG = 0.3;
+	float magGY = 0.4;
+	int fontsize = 16;
+
+	float degM = M_PI / 2.00;
+	float degY = M_PI / 2.00;
+	int m = 1;
+	int mo = 1;
+	int tri = 0;
+	float degQ = 0.00;
+	float markerDrawOffsetQ = 245;
+
+	
+
+	float markerDrawOffsetMonthsStr = 400;
+
+	int offsetMonthStringY = 330;
+
+	//if (triangleT[0].orientation < 90) {
+	////	m = 0;
+	//	mo = 0;
+	//	ofDrawBitmapString("January", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY + 150, fontsize);
+	//}
+	string Monate[12];
+    Monate[0] = "January";
+	Monate[1] = "February";
+	Monate[2] = "March";
+	Monate[3] = "April";
+	Monate[4] = "May";
+	Monate[5] = "June";
+	Monate[6] = "July";
+	Monate[7] = "August";
+	Monate[8] = "September";
+	Monate[10] = "October";
+	Monate[11] = "November";
+	Monate[12] = "December";
+	float degQms = 90.0;
+	int fi = 0;
+	
+	for (int fi = 0; fi < 12; fi++) {
+		
+ofDrawBitmapString("Monate[fi]" , triangleT[0].center.x + cos(degQms)*(1 * magT + markerDrawOffsetQ), triangleT[0].center.y - sin(degQms)*(1 * magT + markerDrawOffsetMonthsStr), fontsize);
+//ofDrawBitmapString("Monat", triangleT[0].center.x + cos(degQms)*(1 * magT + markerDrawOffsetQ), triangleT[0].center.y - sin(degQms)*(1 * magT + markerDrawOffsetQ), fontsize);
+
+//degQms += 2 * M_PI / 12;
+degQms += 2 * M_PI/12;
+}
+	
+
+
+
+	if (triangleT[0].orientation > 90 && triangleT[0].orientation < 120) {
+		m = 0;
+		mo = 0;
+		ofDrawBitmapString("January", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+	
+	if (triangleT[0].orientation > 60 && triangleT[0].orientation < 90) {
+		m = 0;
+		mo = 0;
+		ofDrawBitmapString("Feb", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < -120) {
+		m = 1;
+		mo = 1;
+		ofDrawBitmapString("February", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+
+	}
+
+	else if (triangleT[tri].orientation < -90) {
+		m = 2;
+		mo = 2;
+		ofDrawBitmapString("March", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < -60) {
+		m = 3;
+		mo = 3;
+		ofDrawBitmapString("April", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < -30) {
+		m = 4;
+		mo = 4;
+		ofDrawBitmapString("May", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < 0) {
+		m = 5;
+		mo = 5;
+		ofDrawBitmapString("June", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < 30) {
+		m = 6;
+		mo = 6;
+		ofDrawBitmapString("July", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < 60) {
+		m = 7;
+		mo = 7;
+		ofDrawBitmapString("August", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < 90) {
+		m = 8;
+		mo = 8;
+		ofDrawBitmapString("September", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < 120) {
+		m = 9;
+		mo = 9;
+		ofDrawBitmapString("October", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+	}
+
+	else if (triangleT[tri].orientation < 150) {
+		ofDrawBitmapString("November", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+		m = 10;
+		mo = 10;
+	}
+
+	else if (triangleT[tri].orientation < 180) {
+		ofDrawBitmapString("December", triangleT[0].center.x, triangleT[0].center.y + offsetMonthStringY, fontsize);
+		m = 11;
+		mo = 11;
+	}
+
+
+	else { m = 12; }
+
+	
+	cout << triangleT[0].orientation << endl;
+
+
+
+
+
+	////DRAW MONTH////---------------------------------------------------------------------------------------------------------------------
+	
+
+	/// NUMBERS DAYS /////
+
+
+
+for (int q = 0; q < iAnzahlTage[m]; q++) {
+
+	stringstream ss;
+	ss << q;
+	string str = ss.str();
+	ofDrawBitmapString(ss.str() , triangleT[0].center.x + cos(degQ)*(1 * magT + markerDrawOffsetQ), triangleT[0].center.y - sin(degQ)*( 1 * magT + markerDrawOffsetQ), fontsize);
+
+	degQ += 2 * M_PI / iAnzahlTage[m];
+
+}
+
+///  YEAR //// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+for (int mon = 0; mon < 12; mon++) {
+
+for (int tag = 0; tag < 30; tag++) {
+
+	for (int std = 0; std < 24; std++) {
+
+
+		float r_T = 255 / 33 * Temperatur[mon][tag][std] + 235 * 2 / 9;
+		float g_T = 255 / (-45.00)*Temperatur[mon][tag][std] + 245 * 2 / 3;
+		//float g_T = 255 / (-65.00)*Temperatur[mon][tag][std] + 245 * 2 / 3;
+		float b_T = 255 / (-45.0)*Temperatur[mon][tag][std] + 255 * 2 / 3;
+		float a_T = 255 / -66 * Temperatur[mon][tag][std] + 255 * 2 / 3;
+
+		/////DRAW GLOBALSTRAHLUNG
+		ofSetColor(255, 255, 255, 80); ///YELLOW
+		ofSetLineWidth(1);
+		ofLine(triangleT[0].center.x + cos(degY)*(0.2 * magGY + markerDrawOffsetY), triangleT[0].center.y - sin(degY)* (0.2 * magGY + markerDrawOffsetY), triangleT[0].center.x + cos(degY)*(Globalstrahlung[mon][tag][std] * magGY + markerDrawOffsetY), triangleT[0].center.y - sin(degY)*(Globalstrahlung[mon][tag][std] * magGY + markerDrawOffsetY)); ////// 'SUN RAYS'
+
+		ofSetColor(r_T, g_T, b_T);
+		ofSetLineWidth(4);
+		ofCircle(triangleT[0].center.x + cos(degY)*(Temperatur[mon][tag][std] * magT + markerDrawOffsetY), triangleT[0].center.y - sin(degY)*(Temperatur[mon][tag][std] * magT + markerDrawOffsetY), 0.5, 0.5);
+
+		ofSetColor(r_T, g_T, b_T, a_T);
+		ofLine(triangleT[0].center.x + cos(degY)*(Temperatur[mon][tag][std] * magT + markerDrawOffsetY), triangleT[0].center.y - sin(degY)*(Temperatur[mon][tag][std] * magT + markerDrawOffsetY), triangleT[0].center.x + cos(degY)*(1 * magT + markerDrawOffsetY), triangleT[0].center.y - sin(degY)*(1 * magT + markerDrawOffsetY));
+		ofSetLineWidth(1.0);  // Line widths apply to polylines
+
+		degY += 2 * M_PI / (24.00 * 365.00);
+	}
+}
+
+
+}
+
+
+
+
+/// MONTH  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	for (int j = 0; j < 30; j++) {
+
+		for (int i = 0; i < 24; i++) {
+
+
+			float r_T = 255 / 33 * Temperatur[m][j][i] + 235 * 2/9;
+			float g_T = 255 / (-45.00)*Temperatur[m][j][i] + 245 * 2 / 3;
+			float b_T = 255 / (-45.0)*Temperatur[m][j][i] + 255 * 2 / 3;
+			float a_T = 255 / -66 * Temperatur[m][j][i] + 255 * 2/3;
+
+
+
+			//float r_T = 255 / 10 * Temperatur[m][j][i] + 50 / 3;
+			//float g_T = 255 / (9)*Temperatur[m][j][i] + 180 * 2 / 3;
+			//float b_T = 255 / (-45.0)*Temperatur[m][j][i] + 255 * 2 / 3;
+	
+			/////DRAW GLOBALSTRAHLUNG
+			ofSetColor(255, 255, 255, 150); ///YELLOW
+			ofSetLineWidth(1);
+			ofLine(triangleT[0].center.x + cos(degM)*(1* magG + markerDrawOffsetG), triangleT[0].center.y - sin(degM)* ( 1 * magG + markerDrawOffsetG), triangleT[0].center.x + cos(degM)*(Globalstrahlung[m][j][i] * magG + markerDrawOffsetG), triangleT[0].center.y - sin(degM)*(Globalstrahlung[m][j][i] * magG + markerDrawOffsetG)); ////// 'SUN RAYS'
+			//ofSetColor(0);
+			//ofCircle(triangleT[0].center.x, triangleT[0].center.y, 200, 200);
+			//ofLine(triangleT[0].center.x + cos(degM)* magT + markerDrawOffsetG, triangleT[0].center.y - sin(degM)* magT + markerDrawOffsetG, triangleT[0].center.x + cos(degM)*(Globalstrahlung[m][j][i] * magG + markerDrawOffsetG), triangleT[0].center.y - sin(degM)*(Globalstrahlung[m][j][i] * magG + markerDrawOffsetG));
+			// Define the circle in X and Y coordinates40
+			ofSetColor(r_T, g_T, b_T);
+			ofSetLineWidth(4);
+			//// MONTH////
+			//ofCircle(ofGetMouseX() + cos(degM)*(Temperatur[m][j][i]* magT + markerDrawOffsetM), ofGetMouseY() - sin(degM)*(Temperatur[m][j][i]* magT + markerDrawOffsetM), 2, 2);
+			ofCircle(triangleT[0].center.x + cos(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM), 2.5,2.5);
+
+			ofSetColor(r_T, g_T, b_T, a_T);
+			//ofLine(triangleT[0].center.x + cos(degM)*(50 * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(50 * magT + markerDrawOffsetM), triangleT[0].center.x + cos(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM));  ////// LINE TEMPERATURES
+			ofLine(triangleT[0].center.x + cos(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM), triangleT[0].center.x + cos(degM)*(1 * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(1 * magT + markerDrawOffsetM));
+
+			//ofLine(triangleT[0].center.x + cos(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(50 * magT + markerDrawOffsetM), triangleT[0].center.x + cos(degM)*(50 * magT + markerDrawOffsetM), triangleT[0].center.y - sin(degM)*(Temperatur[m][j][i] * magT + markerDrawOffsetM));
+			ofSetLineWidth(1.0);  // Line widths apply to polylines
+
+			////BLUE/// MAPPING VALUES
+			///		b = at + b
+			
+			///  	255 = a*-10 + b
+			/// 	0 = a * 20 + b
+
+			///		255 * 2 / 3 = b
+			/// 	255 / (-30) = a
+			
+			////RED/// MAPPING VALUES
+			///             r = at + b 
+			/// 			255 = a* 45 + b
+			///             0 = a * 5 + b
+           ///
+			///	255 = -8b--> b = -255 / 8
+			///	255 = 40a--> a = 255 / 40
+
+
+
+			
+			
+			
+
+
+			degM += 2 * M_PI / (24.00 * iAnzahlTage[m]) ;
+		}
+	}
+
+	
+
+
+	//// DAY /// ----------------------------------------------------------------------------------------
+	int magnitudeD = 3;
+	int markerDrawOffsetD = 50;
+	int markerDrawOffsetGD = 55;
+	//int mo = 7;
+	int da = 9;
+	float degD =  M_PI/2;
+	float magnitudeGD = 0.15;
+
+
+	ofPath path;
+
+
+	int idd = 0;
+	
+	//cmath cos function takes RADIANS not DEGREES - so we need to convert it 
+		for (int id = 0, ida= -1; id < 24, ida < 23; id++, ida++) {
+
+		
+			
+
+			
+			ofCircle(triangleT[0].center.x + cos(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetGD), triangleT[0].center.y - sin(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetGD), 2, 2);
+			
+			//ofSetColor(255 / 40 * Temperatur[mo][da][id] - 255 / 8, 75, 255 / (-30.0)*Temperatur[mo][da][id] + 255 * 2 / 3);
+
+			/////DRAW GLOBALSTRAHLUNG
+			ofSetColor(255, 255, 255, 255); ///YELLOW
+			ofSetLineWidth(1);
+			ofLine(triangleT[0].center.x + cos(degD)*(0.2 * magnitudeGD + markerDrawOffsetGD), triangleT[0].center.y - sin(degD)* (0.2 * magnitudeGD + markerDrawOffsetGD), triangleT[0].center.x + cos(degD)*(Globalstrahlung[mo][da][id] * magnitudeGD + markerDrawOffsetGD), triangleT[0].center.y - sin(degD)*(Globalstrahlung[mo][da][id] * magnitudeGD + markerDrawOffsetGD)); ////// 'SUN RAYS'
+
+
+			ofSetColor(255, 255, 255, 70); ///YELLOW
+			ofSetLineWidth(9);
+			ofLine(triangleT[0].center.x + cos(degD)*(0.2 * magnitudeGD + markerDrawOffsetGD), triangleT[0].center.y - sin(degD)* (0.2 * magnitudeGD + markerDrawOffsetGD), triangleT[0].center.x + cos(degD)*(Globalstrahlung[mo][da][id] * magnitudeGD + markerDrawOffsetGD), triangleT[0].center.y - sin(degD)*(Globalstrahlung[mo][da][id] * magnitudeGD + markerDrawOffsetGD)); ////// 'SUN RAYS'
+
+			float r_T = 255 / 33 * Temperatur[m][j][id] + 235 * 2 / 9;
+			float g_T = 255 / (-45.00)*Temperatur[m][j][id] + 245 * 2 / 3;
+			float b_T = 255 / (-45.0)*Temperatur[m][j][id] + 255 * 2 / 3;
+			float a_T = 255 / -66 * Temperatur[m][j][id] + 255 * 2 / 3;
+
+
+			ofSetColor(r_T, g_T, b_T, 100);
+			ofLine(triangleT[0].center.x + cos(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetD), triangleT[0].center.y - sin(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetD), triangleT[0].center.x + cos(degD+ 2 * M_PI / 24.00)*(Temperatur[mo][da][id+1] * magnitudeD + markerDrawOffsetD), triangleT[0].center.y - sin(degD+ 2 * M_PI / 24.00)*(Temperatur[mo][da][id+1] * magnitudeD + markerDrawOffsetD));  ////// LINE TEMPERATURES
+			ofSetLineWidth(8);
+			//ofLine(triangleT[0].center.x + cos(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetD), triangleT[0].center.y - sin(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetD), triangleT[0].center.x + cos(degM)*(1 * magnitudeD + markerDrawOffsetD), triangleT[0].center.y - sin(degD)*(1 * magT + markerDrawOffsetD));
+
+
+			ofSetColor(r_T, g_T, b_T, 255);
+			ofSetLineWidth(1);
+			ofLine(triangleT[0].center.x + cos(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetD), triangleT[0].center.y - sin(degD)*(Temperatur[mo][da][id] * magnitudeD + markerDrawOffsetD), triangleT[0].center.x + cos(degD + 2 * M_PI / 24.00)*(Temperatur[mo][da][id + 1] * magnitudeD + markerDrawOffsetD), triangleT[0].center.y - sin(degD + 2 * M_PI / 24.00)*(Temperatur[mo][da][id + 1] * magnitudeD + markerDrawOffsetD));  ////// LINE TEMPERATURES
+			
+
+
+			degD +=  2*M_PI / 24.00;
+
+
+		}
+	
+	
+	///// --------------------------------------------------------------------------------------------
+
+		
+
+
+
+	//radialc.draw(450, 0);
+
+	
+
+	
+	ofRectangle myRect(0, 0, 75, 100);
+	
+	ofSetColor(ofColor::greenYellow);
+
   for (int i = 0;i < triangleT.size();i++) {
 
 	  if (triangleT[i].visible ) {
 
 
 		  			  ofSetColor(ofColor::blue);
-		  			  ofDrawTriangle(triangleT[i].pos[0], triangleT[i].pos[1], triangleT[i].pos[2]);
+		  			  //ofDrawTriangle(triangleT[i].pos[0], triangleT[i].pos[1], triangleT[i].pos[2]);
 
 
-		ofSetColor(ofColor::green);
+		ofSetColor(ofColor::whiteSmoke);
 		ofPoint dirNorm = triangleT[i].apex - triangleT[i].center ;
 		dirNorm.normalize();
 		  
-		ofPoint scaledPt = triangleT[i].apex+(dirNorm.scale(80));
-		ofPoint scaledPtText = triangleT[i].apex + (dirNorm.scale(40));
+		ofPoint scaledPt = triangleT[i].apex+(dirNorm.scale(5));
+		ofPoint scaledPtText = triangleT[i].apex + (dirNorm.scale(5));
 		ofDrawArrow(triangleT[i].center, scaledPt,10);
 		ofDrawBitmapStringHighlight(ofToString(triangleT[i].index), scaledPtText);
 

@@ -1,5 +1,6 @@
 /*
-www.convivial.studio
+Tangible Recognition Implementation by www.convivial.studio
+Calendar, Visualization Coding - by Laura Wagner
 */
 
 #pragma once
@@ -47,6 +48,11 @@ public:
   ofxToggle fullScreenB;
 
   touchObject touchObj;
+
+  /* IMAGES*/
+
+  ofImage radialc;
+
 
 
 };

@@ -1,5 +1,6 @@
 /*
-www.convivial.studio
+Tangible Recognition Implementation by www.convivial.studio
+Calendar, Visualization Coding - by Laura Wagner
 */
 
 #include "ofApp.h"
@@ -9,7 +10,9 @@ www.convivial.studio
 void ofApp::setup() {
 
 
-	
+	radialc.load("radialc.png");
+
+
   ofxWin8TouchSetup();
   ofRegisterTouchEvents(this);
 
@@ -48,7 +51,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-
+	
 	ofSetBackgroundColor(20, 20, 20);
 
 	if(drawDebugB)touchObj.draw();

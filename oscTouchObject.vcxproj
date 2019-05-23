@@ -171,6 +171,8 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\addons\ofxCsv\src\ofxCsv.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxCsv\src\ofxCsvRow.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxBaseGui.cpp" />
@@ -205,6 +207,8 @@
     <ClCompile Include="src\touchObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\addons\ofxCsv\src\ofxCsv.h" />
+    <ClInclude Include="..\..\..\addons\ofxCsv\src\ofxCsvRow.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxBaseGui.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxButton.h" />
